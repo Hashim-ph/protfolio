@@ -83,4 +83,48 @@ document.addEventListener("DOMContentLoaded", () => {
         el.style.transitionDelay = `${(index % 10) * 0.1}s`;
         observer.observe(el);
     });
+
+    // Mobile Menu Interaction
+    const mobileMenuToggle = document.querySelector(".mobile-menu-toggle");
+    const navLinksList = document.querySelector("nav ul");
+
+    if (mobileMenuToggle && navLinksList) {
+        mobileMenuToggle.addEventListener("click", () => {
+            const isActive = mobileMenuToggle.classList.toggle("active");
+            navLinksList.classList.toggle("active");
+            document.body.style.overflow = isActive ? "hidden" : "";
+        });
+
+        // Close menu and restore scroll when clicking links
+        const navLinks = navLinksList.querySelectorAll("a");
+        navLinks.forEach(link => {
+            link.addEventListener("click", () => {
+                mobileMenuToggle.classList.remove("active");
+                navLinksList.classList.remove("active");
+                document.body.style.overflow = "";
+            });
+        });
+    }
+
+    // Section Active State Observer
+    const sections = document.querySelectorAll("section");
+    const navItems = document.querySelectorAll(".nav-links a");
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                let currentId = entry.target.getAttribute("id");
+                navItems.forEach((link) => {
+                    link.classList.remove("active");
+                    if (link.getAttribute("href").includes(currentId)) {
+                        link.classList.add("active");
+                    }
+                });
+            }
+        });
+    }, { threshold: 0.2, rootMargin: "-20% 0px -50% 0px" });
+
+    sections.forEach((section) => {
+        sectionObserver.observe(section);
+    });
 });
